@@ -130,7 +130,15 @@ export default function FullWidthTabs() {
   const fetchData = useCallback(async () => {
     try {
       const [projectsResponse, certificatesResponse] = await Promise.all([
-        supabase.from("projects").select("*").order('id', { ascending: true }),
+        // supabase.from("projects").select("*").order('id', { ascending: true }),
+        const { data: projectData, error: projectError } = await supabase
+  .from("projects")
+  .select("id, Title, Description, Img, Link, Github, Features, TechStack")
+  .order("id", { ascending: true });
+
+if (projectError) throw projectError;
+setProjects(projectData);
+
         supabase.from("certificates").select("*").order('id', { ascending: true }), 
       ]);
 
