@@ -127,36 +127,66 @@ export default function FullWidthTabs() {
     AOS.init({ once: false });
   }, []);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [projectsResponse, certificatesResponse] = await Promise.all([
-        // supabase.from("projects").select("*").order('id', { ascending: true }),
-        const { data: projectData, error: projectError } = await supabase
-  .from("projects")
-  .select("id, Title, Description, Img, Link, Github, Features, TechStack")
-  .order("id", { ascending: true });
+//   const fetchData = useCallback(async () => {
+//     try {
+//       const [projectsResponse, certificatesResponse] = await Promise.all([
+//         // supabase.from("projects").select("*").order('id', { ascending: true }),
+//         const { data: projectData, error: projectError } = await supabase
+//   .from("projects")
+//   .select("id, Title, Description, Img, Link, Github, Features, TechStack")
+//   .ascending: true });
+// order("id", { 
+// if (projectError) throw projectError;
+// setProjects(projectData);
 
-if (projectError) throw projectError;
-setProjects(projectData);
+//         supabase.from("certificates").select("*").order('id', { ascending: true }), 
+//       ]);
 
-        supabase.from("certificates").select("*").order('id', { ascending: true }), 
-      ]);
+//       if (projectsResponse.error) throw projectsResponse.error;
+//       if (certificatesResponse.error) throw certificatesResponse.error;
 
-      if (projectsResponse.error) throw projectsResponse.error;
-      if (certificatesResponse.error) throw certificatesResponse.error;
+//       const projectData = projectsResponse.data || [];
+//       const certificateData = certificatesResponse.data || [];
 
-      const projectData = projectsResponse.data || [];
-      const certificateData = certificatesResponse.data || [];
+//       setProjects(projectData);
+//       setCertificates(certificateData);
 
-      setProjects(projectData);
-      setCertificates(certificateData);
+//       localStorage.setItem("projects", JSON.stringify(projectData));
+//       localStorage.setItem("certificates", JSON.stringify(certificateData));
+//     } catch (error) {
+//       console.error("Error fetching data from Supabase:", error.message);
+//     }
+//   }, []);
+const fetchData = useCallback(async () => {
+  try {
+    const [projectsResponse, certificatesResponse] = await Promise.all([
+      supabase
+        .from("projects")
+        .select("id, Title, Description, Img, Link, Github, Features, TechStack")
+        .order("id", { ascending: true }),
 
-      localStorage.setItem("projects", JSON.stringify(projectData));
-      localStorage.setItem("certificates", JSON.stringify(certificateData));
-    } catch (error) {
-      console.error("Error fetching data from Supabase:", error.message);
-    }
-  }, []);
+      supabase
+        .from("certificates")
+        .select("*")
+        .order("id", { ascending: true }),
+    ]);
+
+    if (projectsResponse.error) throw projectsResponse.error;
+    if (certificatesResponse.error) throw certificatesResponse.error;
+
+    const projectData = projectsResponse.data || [];
+    const certificateData = certificatesResponse.data || [];
+
+    setProjects(projectData);
+    setCertificates(certificateData);
+
+    localStorage.setItem("projects", JSON.stringify(projectData));
+    localStorage.setItem("certificates", JSON.stringify(certificateData));
+  } catch (error) {
+    console.error("Error fetching data from Supabase:", error.message);
+  }
+}, []);
+
 
   useEffect(() => {
     const cachedProjects = localStorage.getItem('projects');
