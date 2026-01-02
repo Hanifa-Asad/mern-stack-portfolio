@@ -255,7 +255,7 @@ const AboutPage = () => {
 
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-4 w-full">
               <a
-                href="https://drive.google.com/file/d/1oso62Be9Ub5mgUY5-BU9jVS2rrudpr-r/view?usp=drivesdk"
+                href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk"
                 className="w-full lg:w-auto"
               >
                 <button
@@ -266,7 +266,7 @@ const AboutPage = () => {
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Download CV
                 </button>
               </a>
-              <a href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk" className="w-full lg:w-auto">
+              <a href="#portfolio" className="w-full lg:w-auto">
                 <button
                   data-aos="fade-up"
                   data-aos-duration="1000"
