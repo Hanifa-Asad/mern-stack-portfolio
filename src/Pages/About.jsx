@@ -122,6 +122,10 @@ const ExperienceModal = ({ isOpen, onClose }) => (
           </h3>
 
           <ul className="space-y-3 text-sm sm:text-base">
+<li>
+              🌐 <strong>Junior Full Stack Developer (Remote)</strong> — BITS (Business Innovation Technologies), Qatar
+              <p className="text-gray-400">Responsible for developing, maintaining, and optimizing full-stack solutions using modern technologies.</p>
+            </li>
             <li>
               🌐 <strong>Frontend Developer Intern</strong> — Prodigy InfoTech  
               <p className="text-gray-400">Built interactive UI and optimized performance using React.</p>
