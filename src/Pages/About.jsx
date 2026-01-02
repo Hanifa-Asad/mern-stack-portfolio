@@ -262,7 +262,7 @@ const AboutPage = () => {
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Download CV
                 </button>
               </a>
-              <a href="#Portofolio" className="w-full lg:w-auto">
+              <a href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk" className="w-full lg:w-auto">
                 <button
                   data-aos="fade-up"
                   data-aos-duration="1000"
