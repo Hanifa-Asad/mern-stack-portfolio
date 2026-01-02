@@ -279,7 +279,7 @@ const AboutPage = () => {
           </div>
         </div>
 
-        <a href="#Portofolio">
+        <a href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 cursor-pointer">
             {statsData.map((stat) => (
               <StatCard
