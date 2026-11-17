@@ -1,0 +1,33 @@
+/* Phase 3 · Approved Emerald Cinematic V3 foundation
+   Opt-in stylesheet: not yet imported into production.
+   Existing Supabase and routes remain untouched. */
+:root {
+  --cinema-bg: #07100d;
+  --cinema-bg-secondary: #0b1712;
+  --cinema-surface: #10221a;
+  --cinema-emerald: #0f6b45;
+  --cinema-emerald-light: #36a879;
+  --cinema-silver: #a9b6af;
+  --cinema-text: #f1f4f1;
+  --cinema-muted: #9baaa2;
+  --cinema-line: rgba(169,182,175,.18);
+  --cinema-font-display: "Outfit", system-ui, sans-serif;
+  --cinema-font-body: "DM Sans", system-ui, sans-serif;
+  --cinema-font-label: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --cinema-content-max: 1440px;
+  --cinema-gutter: clamp(20px, 5vw, 84px);
+  --cinema-heading-xl: clamp(3.5rem, 10vw, 9rem);
+  --cinema-heading-lg: clamp(2.5rem, 6.5vw, 6rem);
+  --cinema-body-size: clamp(1rem, 1.2vw, 1.125rem);
+}
+.cinema-shell { background: var(--cinema-bg); color: var(--cinema-text); font-family: var(--cinema-font-body); }
+.cinema-shell h1,.cinema-shell h2,.cinema-shell h3 {font-family:var(--cinema-font-display);line-height:.98;letter-spacing:-.045em;}
+.cinema-shell .cinema-container {width:min(calc(100% - 2 * var(--cinema-gutter)),var(--cinema-content-max));margin-inline:auto;}
+.cinema-shell .cinema-eyebrow {font:600 .95rem/1.2 var(--cinema-font-label);letter-spacing:.18em;text-transform:uppercase;color:var(--cinema-emerald-light);}
+.cinema-shell :focus-visible {outline:2px solid var(--cinema-emerald-light);outline-offset:4px;}
+@media (max-width: 640px) {
+  :root {--cinema-heading-xl:clamp(3rem,13vw,5rem);--cinema-heading-lg:clamp(2.2rem,9vw,3.8rem);}
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-shell *, .cinema-shell *::before, .cinema-shell *::after {animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
