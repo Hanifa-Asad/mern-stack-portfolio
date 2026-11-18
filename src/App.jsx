@@ -5,6 +5,7 @@ import "./index.css";
 import Home from "./Pages/Home";
 import { lazy, Suspense } from "react";
 const CinematicHero = lazy(() => import("./components/cinematic/CinematicHero"));
+const CinematicSections = lazy(() => import("./components/cinematic/CinematicSections"));
 import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import Navbar from "./components/Navbar";
@@ -31,11 +32,9 @@ const LandingPage = ({ showWelcome, setShowWelcome }) => {
           <Navbar />
           {!cinematicPreview && <AnimatedBackground />}
           {cinematicPreview ? <Suspense fallback={<div style={{ minHeight: "100vh", background: "#07100d" }} />}><CinematicHero /></Suspense> : <Home />}
-          <About />
-          <Portofolio />
-          <ContactPage />
+          {cinematicPreview ? <Suspense fallback={null}><CinematicSections /></Suspense> : <><About /><Portofolio /><ContactPage /></>}
 
-          <footer>
+          {!cinematicPreview && <footer>
             <center>
               <hr className="my-3 border-gray-400 opacity-15 sm:mx-auto lg:my-6 text-center" />
               <span className="block text-sm pb-4 text-gray-500 text-center dark:text-gray-400">
@@ -51,7 +50,7 @@ const LandingPage = ({ showWelcome, setShowWelcome }) => {
                 . All Rights Reserved.
               </span>
             </center>
-          </footer>
+          </footer>}
         </>
       )}
     </>
