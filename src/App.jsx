@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { useState } from "react";
 import "./index.css";
 import Home from "./Pages/Home";
+import { lazy, Suspense } from "react";
+const CinematicHero = lazy(() => import("./components/cinematic/CinematicHero"));
 import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import Navbar from "./components/Navbar";
@@ -14,19 +16,21 @@ import { AnimatePresence } from "framer-motion";
 import NotFoundPage from "./Pages/404";
 
 const LandingPage = ({ showWelcome, setShowWelcome }) => {
+  // Branch-only opt-in for design review; default keeps existing experience.
+  const cinematicPreview = new URLSearchParams(window.location.search).get("cinematic") === "1";
   return (
     <>
       <AnimatePresence mode="wait">
         {showWelcome && (
-          <WelcomeScreen onLoadingComplete={() => setShowWelcome(false)} />
+          !cinematicPreview && <WelcomeScreen onLoadingComplete={() => setShowWelcome(false)} />
         )}
       </AnimatePresence>
 
-      {!showWelcome && (
+      {(cinematicPreview || !showWelcome) && (
         <>
           <Navbar />
-          <AnimatedBackground />
-          <Home />
+          {!cinematicPreview && <AnimatedBackground />}
+          {cinematicPreview ? <Suspense fallback={<div style={{ minHeight: "100vh", background: "#07100d" }} />}><CinematicHero /></Suspense> : <Home />}
           <About />
           <Portofolio />
           <ContactPage />
