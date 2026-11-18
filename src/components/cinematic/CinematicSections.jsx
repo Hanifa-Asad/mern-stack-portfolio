@@ -47,7 +47,7 @@ function ProjectGallery({ projects, loading }) {
   const [showAll, setShowAll] = useState(false);
   const items = projects.length ? projects.map(p => ({ id: p.id, title: p.Title, description: p.Description, image: p.Img, url: p.Link, github: p.Github })) : fallbackProjects.map(([title, url]) => ({ title, url }));
   const selected = items[Math.min(active, items.length - 1)];
-  return <section className="cinema-section" id="projects"><div className="cinema-container">
+  return <section className="cinema-section" id="Portofolio"><div className="cinema-container">
     <Heading number="03" eyebrow="ENGINEERED WITH INTENT">SELECTED <em>WORK.</em></Heading>
     {loading && <p className="cinema-muted" role="status">Loading portfolio projects…</p>}
     {!loading && !projects.length && <p className="cinema-muted">Showing selected public projects while live portfolio data is unavailable.</p>}
