@@ -90,19 +90,15 @@ export default function CinematicScene() {
     const heroSculpture=new THREE.Group();
     heroSculpture.position.set(6.4,11,-14);
     scene.add(heroSculpture);
-    const sculptureGeometries=[];
-    const sculptureMaterials=[];
     const sculptureRings=[];
     for(let i=0;i<4;i++){
       const radius=5.8-i*.77;
       const geometry=new THREE.TorusGeometry(radius,i===0?.16:.085,12,96);
-      sculptureGeometries.push(geometry);
       const material=new THREE.MeshPhysicalMaterial({
         color:i%2?0x8ce8b7:0xbed8c9,metalness:.84,roughness:.17,
         emissive:i%2?0x0d5737:0x09351f,emissiveIntensity:.24,
         transparent:true,opacity:i===0?.95:.75
       });
-      sculptureMaterials.push(material);
       const ring=new THREE.Mesh(geometry,material);
       ring.position.z=i*.7;
       ring.rotation.y=i*.23;
@@ -110,12 +106,10 @@ export default function CinematicScene() {
       sculptureRings.push(ring);
     }
     const heroCoreGeometry=new THREE.IcosahedronGeometry(2.2,2);
-    sculptureGeometries.push(heroCoreGeometry);
     const heroCoreMaterial=new THREE.MeshPhysicalMaterial({
       color:0x184d36,metalness:.82,roughness:.15,clearcoat:1,clearcoatRoughness:.08,
       emissive:0x0a3927,emissiveIntensity:.6
     });
-    sculptureMaterials.push(heroCoreMaterial);
     const heroCore=new THREE.Mesh(heroCoreGeometry,heroCoreMaterial);
     heroSculpture.add(heroCore);
     const heroAccentLight=new THREE.PointLight(0x75ffc0,48,32,2);
@@ -397,8 +391,6 @@ export default function CinematicScene() {
       scene.traverse(obj=>{if(obj.isMesh&&obj.material&&!Array.isArray(obj.material)&&!([metal,dark,emerald,floorMat,nodeMaterial,lineMaterial,glowMaterial,...atmosphericMaterials].includes(obj.material)))obj.material.dispose();});
       [metal, dark, emerald, floorMat, nodeMaterial, lineMaterial, glowMaterial, dustMaterial, innerPortal.material,...atmosphericMaterials].forEach(material=>material.dispose());
       shaftTexture.dispose();glowTexture.dispose();
-      sculptureGeometries.forEach(geometry=>geometry.dispose());
-      sculptureMaterials.forEach(material=>material.dispose());
       environmentTarget?.dispose();
       environmentGenerator?.dispose();
       bumpTexture.dispose();
