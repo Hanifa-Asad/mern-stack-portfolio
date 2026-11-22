@@ -59,7 +59,7 @@ function ProjectGallery({ projects, loading }) {
       <article className="cinema-projects__preview" aria-live="polite">
         {selected?.image ? <img src={selected.image} alt={selected.title + " project preview"} loading="lazy" /> : <div className="cinema-projects__placeholder" aria-hidden="true"><span>{selected?.title}</span></div>}
         <div className="cinema-projects__details"><h3>{selected?.title}</h3>{selected?.description && <p>{selected.description}</p>}
-        <div className="cinema-projects__links">{selected?.id != null && <a href={"/project/" + encodeURIComponent(selected.id)}>Project details <ArrowUpRight size={16}/></a>}{selected?.url && <a href={selected.url} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}{selected?.github && selected.github !== "Private" && <a href={selected.github} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}</div></div>
+        <div className="cinema-projects__links">{selected?.id != null && <a href={"/project/" + encodeURIComponent(selected.id) + "?cinematic=1"}>Project details <ArrowUpRight size={16}/></a>}{selected?.url && <a href={selected.url} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}{selected?.github && selected.github !== "Private" && <a href={selected.github} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}</div></div>
       </article>
     </div>
   </div></section>;
