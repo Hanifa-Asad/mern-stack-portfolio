@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 import Komentar from "../Commentar";
+import "./cinematic-contact.css";
 export default function CinematicContactForm() {
  const [fields,setFields]=useState({name:"",email:"",message:""});
  const [status,setStatus]=useState("idle");
