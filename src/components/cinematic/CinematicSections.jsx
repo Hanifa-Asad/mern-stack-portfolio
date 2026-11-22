@@ -5,6 +5,7 @@ import { ArrowUpRight, Github, X } from "lucide-react";
 import { supabase } from "../../supabase";
 import "./cinematic-sections.css";
 import CinematicContactForm from "./CinematicContactForm";
+import CinematicTechNetwork from "./CinematicTechNetwork";
 
 const career = [
   ["2026 — PRESENT", "Corporate Python Instructor", "Data Logic", "Python, data analysis and practical business analytics training."],
@@ -103,7 +104,7 @@ export default function CinematicSections() {
   }, [loading]);
   return <div ref={root} className="cinema-shell cinema-sections">
     <section className="cinema-section cinema-about" id="About"><div className="cinema-container cinema-about__layout"><Heading number="01" eyebrow="THE PERSON BEHIND THE WORK">BEYOND <em>THE CODE.</em></Heading><div><p className="cinema-lead">I’m Hanifa Asad — a full-stack developer and technology educator building digital products that balance ambition with purpose.</p><p className="cinema-muted">From modern web applications and custom management systems to training the next generation of developers, my work connects technology, people and practical impact.</p><a className="cinema-text-link" href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk" target="_blank" rel="noopener noreferrer">Explore my CV <ArrowUpRight size={18}/></a></div></div></section>
-    <section className="cinema-section" id="expertise"><div className="cinema-container"><Heading number="02" eyebrow="CONNECTED THINKING">THE SYSTEMS <em>I BUILD.</em></Heading><p className="cinema-muted">Technologies I use to create end-to-end digital experiences.</p><div className="cinema-tech-grid">{technologies.map((tech,i) => <div className="cinema-tech" key={tech}><span>{String(i+1).padStart(2,"0")}</span><strong>{tech}</strong></div>)}</div></div></section>
+    <section className="cinema-section" id="expertise"><div className="cinema-container"><Heading number="02" eyebrow="CONNECTED THINKING">THE SYSTEMS <em>I BUILD.</em></Heading><p className="cinema-muted">Technologies I use to create end-to-end digital experiences.</p><CinematicTechNetwork /></div></section>
     <ProjectGallery projects={projects} loading={loading}/>
     <section className="cinema-section" id="experience"><div className="cinema-container"><Heading number="04" eyebrow="EXPERIENCE & EVOLUTION">THE <em>JOURNEY.</em></Heading><div className="cinema-timeline">{career.map(([date,role,org,description]) => <article className="cinema-timeline__entry" key={role+org}><time>{date}</time><div><h3>{role}</h3><p className="cinema-timeline__org">{org}</p><p className="cinema-muted">{description}</p></div></article>)}</div></div></section>
     <section className="cinema-section cinema-education" id="teaching"><div className="cinema-container"><Heading number="05" eyebrow="THE IMPACT OF SHARING KNOWLEDGE">BUILDING THE <em>NEXT GENERATION.</em></Heading><p className="cinema-lead">Technology becomes more powerful when knowledge is shared.</p><p className="cinema-muted">Through classroom instruction, corporate training and my Young Tech Explorers initiative, I help learners move from curiosity to real-world creation.</p><span className="cinema-education__signature">YOUNG TECH EXPLORERS / EDUCATION & INNOVATION</span></div></section>
