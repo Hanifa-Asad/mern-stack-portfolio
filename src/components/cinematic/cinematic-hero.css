@@ -1,15 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap");
 @import "../../styles/cinematic-tokens.css";
-.cinema-hero{position:relative;isolation:isolate;min-height:100svh;overflow:hidden;background:#07100d;}
+.cinema-hero{position:relative;min-height:100svh;overflow:hidden;background:transparent;}
 .cinema-scene{position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 58% 35%,#183a2a 0%,#07100d 65%);}
 .cinema-scene canvas{width:100%;height:100%;display:block;}
 .cinema-scene--fallback{background:radial-gradient(ellipse at 55% 35%,rgba(54,168,121,.28),transparent 55%),linear-gradient(150deg,#07100d,#10231a 50%,#07100d);}
-.cinema-hero__shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(7,16,13,.84) 0%,rgba(7,16,13,.37) 62%,rgba(7,16,13,.14) 100%),linear-gradient(0deg,rgba(7,16,13,.92),transparent 36%);}
-.cinema-hero__content{min-height:100svh;display:flex;flex-direction:column;justify-content:space-between;padding-block:clamp(100px,12vh,150px) 30px;}
+.cinema-hero__shade{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(7,16,13,.84) 0%,rgba(7,16,13,.37) 62%,rgba(7,16,13,.14) 100%),linear-gradient(0deg,rgba(7,16,13,.92),transparent 36%);}
+.cinema-hero__content{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;justify-content:space-between;padding-block:clamp(100px,12vh,150px) 30px;}
 .cinema-hero__top,.cinema-hero__bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;}
 .cinema-hero__top{color:#a9b6af;}
 .cinema-hero__main{padding-block:60px 40px;max-width:1100px;}
-.cinema-hero__title{font-size:clamp(5rem,15vw,14rem);line-height:.78;letter-spacing:-.075em;font-weight:800;margin:20px 0 26px;color:#f1f4f1;text-shadow:0 8px 35px rgba(0,0,0,.3);}
+.cinema-hero__title{font-size:clamp(4rem,10.5vw,9rem);line-height:.78;letter-spacing:-.075em;font-weight:800;margin:20px 0 26px;color:#f1f4f1;text-shadow:0 8px 35px rgba(0,0,0,.3);}
 .cinema-hero__title>span{display:block;}
 .cinema-hero__dot{color:#36a879;}
 .cinema-hero__description{max-width:500px;font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.75;color:#c2d0c8;}
@@ -21,6 +21,11 @@
 .cinema-hero__social{display:flex;gap:22px;}
 .cinema-hero__social a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:inherit;}
 .cinema-hero__social a:hover{color:#f1f4f1;}
-@media(max-width:700px){.cinema-hero__content{padding-top:100px}.cinema-hero__title{font-size:clamp(4.3rem,17vw,7.5rem)}.cinema-hero__top span:last-child{display:none}.cinema-hero__main{padding-block:55px}.cinema-hero__description{max-width:360px}.cinema-hero__bottom{font-size:.8rem}.cinema-hero__social{gap:14px}.cinema-hero__social span{display:none}.cinema-hero__shade{background:linear-gradient(90deg,rgba(7,16,13,.75),rgba(7,16,13,.2)),linear-gradient(0deg,#07100d,transparent 50%)}}
-@media(max-width:400px){.cinema-hero__title{font-size:clamp(3.5rem,16vw,5rem)}.cinema-hero__button{min-width:0;flex:1;gap:6px;padding:13px 12px}}
+@media(max-width:700px){.cinema-hero__content{padding-top:100px}.cinema-hero__title{font-size:clamp(3.5rem,12vw,6rem)}.cinema-hero__top span:last-child{display:none}.cinema-hero__main{padding-block:55px}.cinema-hero__description{max-width:360px}.cinema-hero__bottom{font-size:.8rem}.cinema-hero__social{gap:14px}.cinema-hero__social span{display:none}.cinema-hero__shade{background:linear-gradient(90deg,rgba(7,16,13,.75),rgba(7,16,13,.2)),linear-gradient(0deg,#07100d,transparent 50%)}}
+@media(max-width:400px){.cinema-hero__title{font-size:clamp(3rem,12vw,4.5rem)}.cinema-hero__button{min-width:0;flex:1;gap:6px;padding:13px 12px}}
 @media(prefers-reduced-motion:reduce){.cinema-hero__button{transition:none}}
+
+/* The scene is mounted once at the app level and remains visible as sections scroll. */
+.cinema-story-backdrop{position:fixed;inset:0;z-index:0;pointer-events:none;background:#07100d;overflow:hidden}
+.cinema-story-backdrop .cinema-scene{position:absolute;inset:0;z-index:0}
+.cinema-hero,.cinema-sections{position:relative;z-index:1}
