@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap");
 @import "../../styles/cinematic-tokens.css";
 .cinema-hero{position:relative;min-height:100svh;overflow:hidden;background:transparent;}
-.cinema-scene{position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 58% 35%,#183a2a 0%,#07100d 65%);}
+.cinema-scene{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 58% 35%,#183a2a 0%,#07100d 65%);}
 .cinema-scene canvas{width:100%;height:100%;display:block;}
 .cinema-scene--fallback{background:radial-gradient(ellipse at 55% 35%,rgba(54,168,121,.28),transparent 55%),linear-gradient(150deg,#07100d,#10231a 50%,#07100d);}
 .cinema-hero__shade{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(7,16,13,.84) 0%,rgba(7,16,13,.37) 62%,rgba(7,16,13,.14) 100%),linear-gradient(0deg,rgba(7,16,13,.92),transparent 36%);}
@@ -29,3 +29,8 @@
 .cinema-story-backdrop{position:fixed;inset:0;z-index:0;pointer-events:none;background:#07100d;overflow:hidden}
 .cinema-story-backdrop .cinema-scene{position:absolute;inset:0;z-index:0}
 .cinema-hero,.cinema-sections{position:relative;z-index:1}
+
+/* A legible cinematic image must sit above the backdrop fill, never behind it. */
+.cinema-story-backdrop{isolation:isolate}
+.cinema-story-backdrop .cinema-scene{z-index:1}
+.cinema-story-backdrop:after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 30%,rgba(2,8,5,.38) 100%)}
