@@ -7,6 +7,7 @@ import { lazy, Suspense } from "react";
 const CinematicHero = lazy(() => import("./components/cinematic/CinematicHero"));
 const CinematicSections = lazy(() => import("./components/cinematic/CinematicSections"));
 const CinematicNav = lazy(() => import("./components/cinematic/CinematicNav"));
+const CinematicScene = lazy(() => import("./components/cinematic/CinematicScene"));
 import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import Navbar from "./components/Navbar";
@@ -30,6 +31,7 @@ const LandingPage = ({ showWelcome, setShowWelcome }) => {
 
       {(cinematicPreview || !showWelcome) && (
         <>
+          {cinematicPreview && <Suspense fallback={null}><div className="cinema-story-backdrop"><CinematicScene /></div></Suspense>}
           {cinematicPreview ? <Suspense fallback={null}><CinematicNav /></Suspense> : <Navbar />}
           {!cinematicPreview && <AnimatedBackground />}
           {cinematicPreview ? <Suspense fallback={<div style={{ minHeight: "100vh", background: "#07100d" }} />}><CinematicHero /></Suspense> : <Home />}
