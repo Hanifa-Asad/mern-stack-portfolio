@@ -49,20 +49,60 @@ function usePortfolioData() {
 function ProjectGallery({ projects, loading }) {
   const [active, setActive] = useState(0);
   const [showAll, setShowAll] = useState(false);
-  const items = projects.length ? projects.map(p => ({ id: p.id, title: p.Title, description: p.Description, image: p.Img, url: p.Link, github: p.Github })) : fallbackProjects.map(([title, url]) => ({ title, url }));
+  const [imageFailed, setImageFailed] = useState(false);
+  const stageRef = useRef(null);
+  const items = projects.length
+    ? projects.map(p => ({ id: p.id, title: p.Title, description: p.Description, image: p.Img, url: p.Link, github: p.Github }))
+    : fallbackProjects.map(([title, url]) => ({ title, url }));
+  const safeUrl = value => {
+    try { const u = new URL(value); return ["https:", "http:"].includes(u.protocol) ? u.href : null; }
+    catch { return null; }
+  };
   const selected = items[Math.min(active, items.length - 1)];
-  return <section className="cinema-section" id="Portofolio"><div className="cinema-container">
+  const choose = index => { setActive(index); setImageFailed(false); if(stageRef.current) { stageRef.current.style.setProperty("--tilt-x","0deg"); stageRef.current.style.setProperty("--tilt-y","0deg"); } };
+  const onMove = event => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || event.pointerType === "touch") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--tilt-y", (((event.clientX - rect.left) / rect.width - .5) * 9).toFixed(2) + "deg");
+    event.currentTarget.style.setProperty("--tilt-x", ((.5 - (event.clientY - rect.top) / rect.height) * 6).toFixed(2) + "deg");
+  };
+  const resetTilt = event => { event.currentTarget.style.setProperty("--tilt-x","0deg"); event.currentTarget.style.setProperty("--tilt-y","0deg"); };
+  return <section className="cinema-section cinema-project-chapter" id="Portofolio"><div className="cinema-container">
     <Heading number="03" eyebrow="ENGINEERED WITH INTENT">SELECTED <em>WORK.</em></Heading>
+    <p className="cinema-muted">Explore real digital products, websites and systems — each built with purpose.</p>
     {loading && <p className="cinema-muted" role="status">Loading portfolio projects…</p>}
     {!loading && !projects.length && <p className="cinema-muted">Showing selected public projects while live portfolio data is unavailable.</p>}
-    <div className="cinema-projects">
-      <div className="cinema-projects__list">{items.slice(0, showAll ? items.length : 6).map((p, i) =>
-        <button key={p.id ?? p.title} className={"cinema-projects__item" + (active === i ? " is-active" : "")} onClick={() => setActive(i)} aria-pressed={active === i}><span>{String(i + 1).padStart(2, "0")}</span><strong>{p.title}</strong><ArrowUpRight size={19}/></button>
-      )}{items.length > 6 && <button className="cinema-more" onClick={() => setShowAll(v => !v)}>{showAll ? "Show fewer" : "View all projects"}</button>}</div>
-      <article className="cinema-projects__preview" aria-live="polite">
-        {selected?.image ? <img src={selected.image} alt={selected.title + " project preview"} loading="lazy" /> : <div className="cinema-projects__placeholder" aria-hidden="true"><span>{selected?.title}</span></div>}
-        <div className="cinema-projects__details"><h3>{selected?.title}</h3>{selected?.description && <p>{selected.description}</p>}
-        <div className="cinema-projects__links">{selected?.id != null && <a href={"/project/" + encodeURIComponent(selected.id) + "?cinematic=1"}>Project details <ArrowUpRight size={16}/></a>}{selected?.url && <a href={selected.url} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}{selected?.github && selected.github !== "Private" && <a href={selected.github} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}</div></div>
+    <div className="cinema-projects cinema-projects--immersive">
+      <div className="cinema-projects__list" aria-label="Select a project">{items.slice(0,showAll?items.length:6).map((p,i) =>
+        <button key={p.id ?? p.title} type="button" className={"cinema-projects__item"+(active===i?" is-active":"")} onClick={()=>choose(i)} aria-pressed={active===i}>
+          <span>{String(i+1).padStart(2,"0")}</span><strong>{p.title}</strong><ArrowUpRight size={19}/>
+        </button>
+      )}
+      {items.length>6 && <button className="cinema-more" type="button" onClick={()=>setShowAll(v=>!v)}>{showAll?"Show fewer":"View all projects"}</button>}
+      </div>
+      <article className="cinema-projects__preview cinema-projects__preview--immersive" aria-live="polite">
+        <div className="cinema-projects__stage" ref={stageRef} onPointerMove={onMove} onPointerLeave={resetTilt}>
+          <div className="cinema-projects__halo" aria-hidden="true"/>
+          <div className="cinema-projects__orbit cinema-projects__orbit--one" aria-hidden="true"/>
+          <div className="cinema-projects__orbit cinema-projects__orbit--two" aria-hidden="true"/>
+          <div className="cinema-projects__screen">
+            <div className="cinema-projects__screenbar"><span/><span/><span/><small>{String(active+1).padStart(2,"0")} / {String(items.length).padStart(2,"0")}</small></div>
+            {selected?.image && safeUrl(selected.image) && !imageFailed
+              ? <img key={selected.id ?? selected.title} src={safeUrl(selected.image)} alt={selected.title+" website screenshot"} loading="lazy" onError={()=>setImageFailed(true)}/>
+              : <div className="cinema-projects__placeholder"><span>{selected?.title}</span><small>PROJECT SHOWCASE</small></div>}
+          </div>
+          <span className="cinema-projects__stage-caption">DIGITAL EXPERIENCES / SELECTED WORK</span>
+        </div>
+        <div className="cinema-projects__details" key={selected?.id ?? selected?.title}>
+          <div className="cinema-projects__index">CASE STUDY — {String(active+1).padStart(2,"0")}</div>
+          <h3>{selected?.title}</h3>
+          {selected?.description && <p>{selected.description}</p>}
+          <div className="cinema-projects__links">
+            {selected?.id!=null && <a href={"/project/"+encodeURIComponent(selected.id)+"?cinematic=1"}>Explore project <ArrowUpRight size={16}/></a>}
+            {safeUrl(selected?.url) && <a href={safeUrl(selected.url)} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}
+            {safeUrl(selected?.github) && <a href={safeUrl(selected.github)} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}
+          </div>
+        </div>
       </article>
     </div>
   </div></section>;
