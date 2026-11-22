@@ -20,7 +20,6 @@ export default function CinematicScene() {
     let removeContextHandlers=()=>{};
     let disposed = false;
     let lastFrameTime=0;
-    let scrollDirty=true;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#07100d");
     scene.fog = new THREE.FogExp2("#07100d", 0.0065);
@@ -280,7 +279,6 @@ export default function CinematicScene() {
       pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
     };
     const onScroll = () => {
-      scrollDirty=true;
       const total = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, window.scrollY / total));
     };
