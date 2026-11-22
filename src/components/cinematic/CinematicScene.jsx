@@ -15,7 +15,7 @@ export default function CinematicScene() {
     let disposed = false;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#07100d");
-    scene.fog = new THREE.FogExp2("#07100d", 0.0105);
+    scene.fog = new THREE.FogExp2("#07100d", 0.0065);
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 600);
     camera.position.set(0, 6.8, 28);
     const clock = new THREE.Clock();
@@ -75,7 +75,7 @@ export default function CinematicScene() {
     scene.add(floor);
     block(0.08, 0.05, 850, -6.2, 0.02, -330, emerald);
     block(0.08, 0.05, 850, 6.2, 0.02, -330, emerald);
-    scene.add(new THREE.HemisphereLight(0xc7e6d2, 0x06110b, 1.15));
+    const ambient=new THREE.HemisphereLight(0xc7e6d2, 0x06110b, 1.45);scene.add(ambient);
     const key = new THREE.DirectionalLight(0xe5f4ec, 2.4);
     key.position.set(-12, 25, 18);
     scene.add(key);
@@ -253,12 +253,18 @@ export default function CinematicScene() {
       return el ? el.getBoundingClientRect().top+window.scrollY+el.offsetHeight/2 : null;
     });
     let centers=chapterCenters();
+    let layoutObserver;
     const desiredLook=new THREE.Vector3();
     const smoothLook=new THREE.Vector3(0,10,0);
     const cameraFrom=new THREE.Vector3();
     const cameraTo=new THREE.Vector3();
     const lookTarget=new THREE.Vector3();
     const motion={chapter:0};
+    const chapterOffsets=[[0,0],[2.8,.3],[-2.2,1.5],[3.4,-.4],[-3.5,.6],[2.2,1.6],[-1.8,-.3],[2.7,.8],[0,0]];
+    const chapterExposure=[1.27,1.23,1.35,1.29,1.26,1.32,1.3,1.25,1.28];
+    const storyFill=new THREE.PointLight(0xc7ffe2,48,80,1.5);
+    scene.add(storyFill);
+    const chapterNames=["INTRO","ABOUT","SYSTEMS","PROJECTS","JOURNEY","EDUCATION","RECOGNITION","CREDENTIALS","CONTACT"];
     const easing=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
     let pointerX = 0, pointerY = 0, progress = 0;
     const onPointer = (event) => {
@@ -301,6 +307,8 @@ export default function CinematicScene() {
       cameraFrom.copy(stations[index][0]);
       cameraTo.copy(stations[index+1][0]);
       cameraDestination.lerpVectors(cameraFrom,cameraTo,eased);
+      cameraDestination.x+=THREE.MathUtils.lerp(chapterOffsets[index][0],chapterOffsets[index+1][0],eased);
+      cameraDestination.y+=THREE.MathUtils.lerp(chapterOffsets[index][1],chapterOffsets[index+1][1],eased);
       cameraDestination.x+=x*1.2;
       cameraDestination.y-=pointerY*.6;
       cameraDestination.y+=Math.sin(t*.4)*.12;
@@ -315,6 +323,11 @@ export default function CinematicScene() {
       camera.position.lerp(cameraDestination,.07);
       smoothLook.lerp(desiredLook,.07);
       camera.lookAt(smoothLook);
+      storyFill.position.set(camera.position.x+3,camera.position.y+7,camera.position.z-16);
+      const targetExposure=THREE.MathUtils.lerp(chapterExposure[index],chapterExposure[index+1],eased);
+      renderer.toneMappingExposure=THREE.MathUtils.lerp(renderer.toneMappingExposure,targetExposure,.035);
+      ambient.intensity=1.45+Math.sin(motion.chapter*Math.PI*.5)*.12;
+      host.dataset.chapter=chapterNames[Math.min(8,Math.round(motion.chapter))];
       const opening=easing(Math.min(1,Math.max(0,motion.chapter/.8)));
       heroDoors.forEach(({door,sign})=>{door.position.x=sign*(2.85+opening*6.8);door.material.opacity=.38*(1-opening*.8);});
       const heroPresence=Math.max(0,1-motion.chapter*.85);
@@ -354,7 +367,7 @@ export default function CinematicScene() {
       renderer.setClearColor(0x07100d, 1);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.08;
+      renderer.toneMappingExposure = 1.27;
       environmentGenerator=new THREE.PMREMGenerator(renderer);
       environmentTarget=environmentGenerator.fromScene(studio,.04);
       scene.environment=environmentTarget.texture;
@@ -363,6 +376,11 @@ export default function CinematicScene() {
       window.addEventListener("pointermove", onPointer, { passive: true });
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", resize);
+      if(typeof ResizeObserver!=="undefined"){
+        layoutObserver=new ResizeObserver(()=>{centers=chapterCenters();});
+        ids.forEach(id=>{const el=document.getElementById(id);if(el)layoutObserver.observe(el);});
+      }
+      document.fonts?.ready?.then(()=>{if(!disposed)centers=chapterCenters();});
       resize();
       onScroll();
       const onVisibility = () => {
@@ -383,6 +401,7 @@ export default function CinematicScene() {
       running = false;
       cancelAnimationFrame(frameId);
       observer?.disconnect();
+      layoutObserver?.disconnect();
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
