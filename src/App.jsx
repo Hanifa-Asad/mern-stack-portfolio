@@ -8,6 +8,7 @@ const CinematicHero = lazy(() => import("./components/cinematic/CinematicHero"))
 const CinematicSections = lazy(() => import("./components/cinematic/CinematicSections"));
 const CinematicNav = lazy(() => import("./components/cinematic/CinematicNav"));
 const CinematicScene = lazy(() => import("./components/cinematic/CinematicScene"));
+const CinematicProjectDetail = lazy(() => import("./components/cinematic/CinematicProjectDetail"));
 import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import Navbar from "./components/Navbar";
@@ -98,7 +99,7 @@ function App() {
             />
           }
         />
-        <Route path="/project/:id" element={<ProjectPageLayout />} />
+        <Route path="/project/:id" element={new URLSearchParams(window.location.search).get("cinematic") === "1" ? <Suspense fallback={<div style={{minHeight:"100vh",background:"#07100d"}}/>}><CinematicProjectDetail /></Suspense> : <ProjectPageLayout />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
