@@ -1,8 +1,7 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowUpRight, Github, Linkedin } from "lucide-react";
 import gsap from "gsap";
 import "./cinematic-hero.css";
-const CinematicScene = lazy(() => import("./CinematicScene"));
 
 export default function CinematicHero() {
   const root = useRef(null);
@@ -18,9 +17,6 @@ export default function CinematicHero() {
   }, []);
   return (
     <section id="Home" className="cinema-shell cinema-hero" ref={root} aria-labelledby="cinema-hero-title">
-      <Suspense fallback={<div className="cinema-scene cinema-scene--fallback" aria-hidden="true" />}>
-        <CinematicScene />
-      </Suspense>
       <div className="cinema-hero__shade" aria-hidden="true" />
       <div className="cinema-hero__content cinema-container">
         <div className="cinema-hero__top cinema-hero__reveal">
