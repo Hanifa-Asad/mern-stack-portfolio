@@ -85,6 +85,55 @@ export default function CinematicScene() {
     const far = new THREE.PointLight(0x36a879, 25, 65);
     far.position.set(0, 14, -48);
     scene.add(far);
+    // Hero's visual anchor: a layered kinetic architectural aperture.
+    // It sits on the right of the typography, with enough negative space for legibility.
+    const heroSculpture=new THREE.Group();
+    heroSculpture.position.set(6.4,11,-14);
+    scene.add(heroSculpture);
+    const sculptureGeometries=[];
+    const sculptureMaterials=[];
+    const sculptureRings=[];
+    for(let i=0;i<4;i++){
+      const radius=5.8-i*.77;
+      const geometry=new THREE.TorusGeometry(radius,i===0?.16:.085,12,96);
+      sculptureGeometries.push(geometry);
+      const material=new THREE.MeshPhysicalMaterial({
+        color:i%2?0x8ce8b7:0xbed8c9,metalness:.84,roughness:.17,
+        emissive:i%2?0x0d5737:0x09351f,emissiveIntensity:.24,
+        transparent:true,opacity:i===0?.95:.75
+      });
+      sculptureMaterials.push(material);
+      const ring=new THREE.Mesh(geometry,material);
+      ring.position.z=i*.7;
+      ring.rotation.y=i*.23;
+      heroSculpture.add(ring);
+      sculptureRings.push(ring);
+    }
+    const heroCoreGeometry=new THREE.IcosahedronGeometry(2.2,2);
+    sculptureGeometries.push(heroCoreGeometry);
+    const heroCoreMaterial=new THREE.MeshPhysicalMaterial({
+      color:0x184d36,metalness:.82,roughness:.15,clearcoat:1,clearcoatRoughness:.08,
+      emissive:0x0a3927,emissiveIntensity:.6
+    });
+    sculptureMaterials.push(heroCoreMaterial);
+    const heroCore=new THREE.Mesh(heroCoreGeometry,heroCoreMaterial);
+    heroSculpture.add(heroCore);
+    const heroAccentLight=new THREE.PointLight(0x75ffc0,48,32,2);
+    heroAccentLight.position.set(7,13,-7);scene.add(heroAccentLight);
+    // Repeated architecture at each story chapter, instead of an empty corridor
+    // after the first 80 world units.
+    const chapterFrameZ=[-105,-160,-224,-286,-330,-366,-430];
+    chapterFrameZ.forEach((z,i)=>{
+      const width=i%2?22:25, height=24;
+      const side=i%2?metal:dark;
+      block(.8,height,1.3,-width/2,height/2,z,side);
+      block(.8,height,1.3,width/2,height/2,z,side);
+      block(width,.8,1.3,0,height,z,side);
+      block(width-.7,.09,1.5,0,height-.65,z,emerald);
+      for(const offset of [-1,1]){
+        block(.07,18,.1,offset*(width/2-1.2),10,z+.9,emerald);
+      }
+    });
     // Cinematic atmosphere: layered shafts, floating dust and deep architectural framing.
     // Procedural textures avoid external image dependencies.
     const atmosphericMaterials = [];
@@ -234,6 +283,7 @@ export default function CinematicScene() {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.fov = w < 640 ? 64 : 48;
+      heroSculpture.position.x=w<700?4.8:6.4;
       centers=chapterCenters();
       camera.updateProjectionMatrix();
     };
@@ -273,6 +323,19 @@ export default function CinematicScene() {
       camera.lookAt(smoothLook);
       const opening=easing(Math.min(1,Math.max(0,motion.chapter/.8)));
       heroDoors.forEach(({door,sign})=>{door.position.x=sign*(2.85+opening*6.8);door.material.opacity=.38*(1-opening*.8);});
+      const heroPresence=Math.max(0,1-motion.chapter*.85);
+      heroSculpture.visible=motion.chapter<1.6;
+      heroSculpture.rotation.y=Math.sin(t*.22)*.13+motion.chapter*.18;
+      heroSculpture.rotation.z=Math.sin(t*.16)*.07;
+      heroSculpture.position.y=11+Math.sin(t*.45)*.24;
+      sculptureRings.forEach((ring,i)=>{
+        ring.rotation.z=t*(i%2?-.075:.065)*(1+i*.18);
+        ring.rotation.y=i*.23+Math.sin(t*.32+i)*.12;
+        ring.material.opacity=(i===0?.95:.75)*Math.max(.15,heroPresence);
+      });
+      heroCore.rotation.y=t*.12;
+      heroCore.rotation.x=t*.08;
+      heroAccentLight.intensity=48*heroPresence;
       lattice.rotation.y=t*.09;
       lattice.rotation.z=Math.sin(t*.35)*.035;
       const techReveal=easing(Math.min(1,Math.max(0,(motion.chapter-1.2)/.8)));
@@ -334,6 +397,8 @@ export default function CinematicScene() {
       scene.traverse(obj=>{if(obj.isMesh&&obj.material&&!Array.isArray(obj.material)&&!([metal,dark,emerald,floorMat,nodeMaterial,lineMaterial,glowMaterial,...atmosphericMaterials].includes(obj.material)))obj.material.dispose();});
       [metal, dark, emerald, floorMat, nodeMaterial, lineMaterial, glowMaterial, dustMaterial, innerPortal.material,...atmosphericMaterials].forEach(material=>material.dispose());
       shaftTexture.dispose();glowTexture.dispose();
+      sculptureGeometries.forEach(geometry=>geometry.dispose());
+      sculptureMaterials.forEach(material=>material.dispose());
       environmentTarget?.dispose();
       environmentGenerator?.dispose();
       bumpTexture.dispose();
