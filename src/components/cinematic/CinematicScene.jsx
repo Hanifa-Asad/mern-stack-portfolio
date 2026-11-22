@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-/** Self-contained architectural corridor. Only renders while the hero is visible. */
+/** Persistent architectural corridor, animated across the entire cinematic page. */
 export default function CinematicScene() {
   const mountRef = useRef(null);
   const [failed, setFailed] = useState(false);
@@ -64,13 +64,12 @@ export default function CinematicScene() {
     scene.add(far);
     let pointerX = 0, pointerY = 0, progress = 0;
     const onPointer = (event) => {
-      const rect = host.getBoundingClientRect();
-      pointerX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      pointerY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      pointerX = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+      pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
     };
     const onScroll = () => {
-      const rect = host.getBoundingClientRect();
-      progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height)));
+      const total = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      progress = Math.max(0, Math.min(1, window.scrollY / total));
     };
     const resize = () => {
       if (!renderer || disposed) return;
@@ -86,9 +85,9 @@ export default function CinematicScene() {
       if (!running || disposed) return;
       const t = clock.getElapsedTime();
       const x = pointerX * 1.1;
-      cameraDestination.set(x, 6.8 - pointerY * 0.55 + Math.sin(t * 0.3) * 0.12, 28 - progress * 15);
+      cameraDestination.set(x + Math.sin(progress * Math.PI * 3) * 2.2, 6.8 - pointerY * 0.55 + Math.sin(t * 0.3) * 0.12 + progress * 1.5, 28 - progress * 62);
       camera.position.lerp(cameraDestination, 0.055);
-      target.set(0, 10, -12 - progress * 13);
+      target.set(Math.sin(progress * Math.PI * 2) * 2, 10, -12 - progress * 52);
       camera.lookAt(target);
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(draw);
@@ -101,17 +100,20 @@ export default function CinematicScene() {
       renderer.toneMappingExposure = 1.3;
       renderer.domElement.setAttribute("aria-hidden", "true");
       host.appendChild(renderer.domElement);
-      host.addEventListener("pointermove", onPointer, { passive: true });
+      window.addEventListener("pointermove", onPointer, { passive: true });
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", resize);
       resize();
       onScroll();
-      observer = new IntersectionObserver(([entry]) => {
-        running = entry.isIntersecting;
+      const onVisibility = () => {
+        running = !document.hidden;
         cancelAnimationFrame(frameId);
         if (running) draw();
-      }, { threshold: 0 });
-      observer.observe(host);
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+      running = !document.hidden;
+      if (running) draw();
+      observer = { disconnect: () => document.removeEventListener("visibilitychange", onVisibility) };
     } catch (error) {
       console.warn("Cinematic WebGL fallback:", error);
       setFailed(true);
@@ -121,7 +123,7 @@ export default function CinematicScene() {
       running = false;
       cancelAnimationFrame(frameId);
       observer?.disconnect();
-      host.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
       scene.traverse((obj) => { if (obj.isMesh && obj.geometry && !geometries.includes(obj.geometry)) obj.geometry.dispose(); });
