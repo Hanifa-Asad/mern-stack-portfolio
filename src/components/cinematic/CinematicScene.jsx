@@ -19,11 +19,35 @@ export default function CinematicScene() {
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 600);
     camera.position.set(0, 6.8, 28);
     const clock = new THREE.Clock();
-    const metal = new THREE.MeshStandardMaterial({ color: 0x85988d, metalness: 0.8, roughness: 0.3 });
-    const dark = new THREE.MeshStandardMaterial({ color: 0x13221a, metalness: 0.65, roughness: 0.35 });
+    // Studio environment and brushed-metal microtexture from the approved visual direction.
+    const studio = new THREE.Scene();
+    studio.background = new THREE.Color(0x020504);
+    const studioMaterials=[];
+    [[30,6,0,20,0,0xffffff,3],[6,30,-20,5,0,0xcfe8dc,2.2],[10,30,20,5,-10,0x36a879,2.4],[40,4,0,-10,-20,0x0f6b45,1.6]].forEach(([w,h,x,y,z,color,intensity])=>{
+      const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(color).multiplyScalar(intensity),side:THREE.DoubleSide});
+      studioMaterials.push(mat);
+      const panel=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);
+      panel.position.set(x,y,z);panel.lookAt(0,0,0);studio.add(panel);
+    });
+    const bumpCanvas=document.createElement("canvas");bumpCanvas.width=bumpCanvas.height=256;
+    const bumpCtx=bumpCanvas.getContext("2d");
+    if(bumpCtx){
+      bumpCtx.fillStyle="#808080";bumpCtx.fillRect(0,0,256,256);
+      for(let i=0;i<1100;i++){
+        const light=i%2===0;
+        bumpCtx.fillStyle=light?"rgba(255,255,255,.045)":"rgba(0,0,0,.045)";
+        const y=(i*37.7)%256,x=(i*91.3)%256;
+        bumpCtx.fillRect(x,y,20+(i*13)%80,1);
+      }
+    }
+    const bumpTexture=new THREE.CanvasTexture(bumpCanvas);
+    bumpTexture.wrapS=bumpTexture.wrapT=THREE.RepeatWrapping;
+    const metal = new THREE.MeshStandardMaterial({ color: 0x899a90, metalness: 1, roughness: 0.31, bumpMap:bumpTexture,bumpScale:.18 });
+    const dark = new THREE.MeshStandardMaterial({ color: 0x101d16, metalness: 0.92, roughness: 0.24 });
     const emerald = new THREE.MeshBasicMaterial({ color: 0x36a879 });
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a1811, metalness: 0.25, roughness: 0.75 });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a1811, metalness: 0.78, roughness: 0.32 });
     const geometries = [];
+    let environmentGenerator, environmentTarget;
     function block(w, h, d, x, y, z, material) {
       const geometry = new THREE.BoxGeometry(w, h, d);
       geometries.push(geometry);
@@ -273,7 +297,10 @@ export default function CinematicScene() {
       renderer.setClearColor(0x07100d, 1);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.3;
+      renderer.toneMappingExposure = 1.08;
+      environmentGenerator=new THREE.PMREMGenerator(renderer);
+      environmentTarget=environmentGenerator.fromScene(studio,.04);
+      scene.environment=environmentTarget.texture;
       renderer.domElement.setAttribute("aria-hidden", "true");
       host.appendChild(renderer.domElement);
       window.addEventListener("pointermove", onPointer, { passive: true });
@@ -307,6 +334,11 @@ export default function CinematicScene() {
       scene.traverse(obj=>{if(obj.isMesh&&obj.material&&!Array.isArray(obj.material)&&!([metal,dark,emerald,floorMat,nodeMaterial,lineMaterial,glowMaterial,...atmosphericMaterials].includes(obj.material)))obj.material.dispose();});
       [metal, dark, emerald, floorMat, nodeMaterial, lineMaterial, glowMaterial, dustMaterial, innerPortal.material,...atmosphericMaterials].forEach(material=>material.dispose());
       shaftTexture.dispose();glowTexture.dispose();
+      environmentTarget?.dispose();
+      environmentGenerator?.dispose();
+      bumpTexture.dispose();
+      studio.traverse(obj=>{if(obj.isMesh)obj.geometry.dispose();});
+      studioMaterials.forEach(material=>material.dispose());
       renderer?.dispose();
       if (renderer?.domElement?.parentNode === host) host.removeChild(renderer.domElement);
     };
