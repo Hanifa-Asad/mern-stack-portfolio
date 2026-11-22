@@ -100,23 +100,34 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
+  const [loadError, setLoadError] = useState(false);
+
   useEffect(() => {
+    let active = true;
     window.scrollTo(0, 0);
-    const storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-    const selectedProject = storedProjects.find((p) => String(p.id) === id);
-    
-    if (selectedProject) {
-      const enhancedProject = {
-        ...selectedProject,
-        Features: selectedProject.Features || [],
-        TechStack: selectedProject.TechStack || [],
-        Github: selectedProject.Github || 'https://github.com/Hanifa-Asad',
-      };
-      setProject(enhancedProject);
+    const enhance = (item) => ({
+      ...item,
+      Features: item.Features || [],
+      TechStack: item.TechStack || [],
+      Github: item.Github || "Private",
+    });
+    let cached = [];
+    try { cached = JSON.parse(localStorage.getItem("projects") || "[]"); } catch { cached = []; }
+    const match = cached.find((p) => String(p.id) === String(id));
+    if (match) setProject(enhance(match));
+    else {
+      import("../supabase").then(async ({ supabase }) => {
+        const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
+        if (!active) return;
+        if (error || !data) setLoadError(true);
+        else setProject(enhance(data));
+      }).catch(() => { if (active) setLoadError(true); });
     }
+    return () => { active = false; };
   }, [id]);
 
   if (!project) {
+    if (loadError) return <div className="min-h-screen bg-[#030014] text-white flex flex-col items-center justify-center gap-5"><h2 className="text-2xl">Project not found</h2><button className="underline" onClick={() => navigate("/#Portofolio")}>Back to portfolio</button></div>;
     return (
       <div className="min-h-screen bg-[#030014] flex items-center justify-center">
         <div className="text-center space-y-6 animate-fadeIn">
