@@ -18,3 +18,29 @@
 .cinema-projects__preview{box-shadow:0 30px 100px rgba(0,0,0,.45);overflow:hidden}
 .cinema-projects__preview>img{object-fit:contain;background:#07100d;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
 .cinema-projects__preview:hover>img{transform:scale(1.035)}
+
+/* Immersive project gallery: layered perspective stage, not a flat screenshot card. */
+.cinema-projects--immersive{align-items:start;margin-top:40px}
+.cinema-projects__preview--immersive{background:rgba(5,17,11,.92);border:1px solid rgba(105,191,139,.3);box-shadow:0 35px 100px rgba(0,0,0,.45);overflow:visible}
+.cinema-projects__stage{--tilt-x:0deg;--tilt-y:0deg;position:relative;isolation:isolate;height:clamp(320px,34vw,470px);overflow:hidden;perspective:1100px;background:radial-gradient(ellipse at 52% 44%,#1a5337 0%,#0b2619 37%,#050e0a 78%)}
+.cinema-projects__stage:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 95%,rgba(89,191,132,.12) 96%),linear-gradient(90deg,transparent 95%,rgba(89,191,132,.12) 96%);background-size:46px 46px;opacity:.45;transform:perspective(420px) rotateX(58deg) scale(1.5) translateY(19%);mask-image:linear-gradient(transparent 20%,#000 100%)}
+.cinema-projects__halo{position:absolute;inset:14% 7%;border-radius:50%;background:radial-gradient(ellipse,rgba(77,231,150,.22),transparent 65%);filter:blur(23px);pointer-events:none}
+.cinema-projects__orbit{position:absolute;left:50%;top:46%;width:78%;aspect-ratio:1;border:1px solid rgba(112,223,160,.18);border-radius:50%;transform:translate(-50%,-50%) rotateX(67deg) rotateZ(-25deg);pointer-events:none}
+.cinema-projects__orbit--two{width:106%;border-color:rgba(112,223,160,.11);transform:translate(-50%,-50%) rotateX(74deg) rotateZ(28deg)}
+.cinema-projects__screen{position:absolute;inset:12% 13% 16%;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(191,244,210,.55);border-radius:9px;background:#081710;box-shadow:0 0 0 7px rgba(12,35,24,.65),0 0 0 8px rgba(107,210,151,.18),-25px 36px 50px rgba(0,0,0,.55),0 0 60px rgba(47,204,115,.13);transform:rotateY(var(--tilt-y)) rotateX(var(--tilt-x)) rotateY(-7deg) rotateX(4deg);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s;will-change:transform}
+.cinema-projects__stage:hover .cinema-projects__screen{box-shadow:0 0 0 7px rgba(12,35,24,.65),0 0 0 8px rgba(107,210,151,.3),-25px 42px 65px rgba(0,0,0,.62),0 0 90px rgba(47,204,115,.22)}
+.cinema-projects__screenbar{height:29px;flex:none;display:flex;align-items:center;gap:6px;padding:0 12px;background:#152d20;border-bottom:1px solid rgba(124,208,153,.28)}
+.cinema-projects__screenbar span{width:6px;height:6px;border-radius:50%;background:#648d74}
+.cinema-projects__screenbar span:first-child{background:#6dcf9b}
+.cinema-projects__screenbar small{margin-left:auto;color:#b4d9bf;font-size:10px;letter-spacing:.13em}
+.cinema-projects__screen>img{display:block;width:100%;height:calc(100% - 29px);object-fit:contain;object-position:top;background:#0a120e;animation:cinema-project-appear .65s ease both}
+.cinema-projects__screen .cinema-projects__placeholder{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-size:clamp(1.4rem,2.5vw,2.7rem);background:linear-gradient(140deg,#153c29,#07110c)}
+.cinema-projects__placeholder small{font:600 .75rem var(--cinema-font-label);letter-spacing:.22em;color:#a5d7b9}
+.cinema-projects__stage-caption{position:absolute;bottom:15px;left:20px;font:600 .65rem var(--cinema-font-label);letter-spacing:.18em;color:#94c5a7}
+.cinema-projects__preview--immersive .cinema-projects__details{padding:26px 30px 30px}
+.cinema-projects__index{font:600 .7rem var(--cinema-font-label);letter-spacing:.19em;color:#8acda4;margin-bottom:12px}
+.cinema-projects__preview--immersive .cinema-projects__details{animation:cinema-project-appear .45s ease both}
+@keyframes cinema-project-appear{from{opacity:.35;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.cinema-projects__preview--immersive{position:static}.cinema-projects__stage{height:clamp(290px,60vw,440px)}}
+@media(max-width:520px){.cinema-projects__stage{height:300px}.cinema-projects__screen{inset:15% 9% 18%}.cinema-projects__preview--immersive .cinema-projects__details{padding:22px}.cinema-projects__stage-caption{font-size:.57rem}}
+@media(prefers-reduced-motion:reduce){.cinema-projects__screen,.cinema-projects__screen>img,.cinema-projects__preview--immersive .cinema-projects__details{animation:none;transition:none;transform:none}}
