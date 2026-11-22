@@ -75,17 +75,19 @@ export default function CinematicScene() {
     const resize = () => {
       if (!renderer || disposed) return;
       const w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight);
-      renderer.setSize(w, h, false);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, w < 768 ? 1.25 : 1.75));
+      renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.fov = w < 640 ? 62 : 48;
       camera.updateProjectionMatrix();
     };
+    const cameraDestination = new THREE.Vector3();
     const draw = () => {
       if (!running || disposed) return;
       const t = clock.getElapsedTime();
       const x = pointerX * 1.1;
-      camera.position.lerp(new THREE.Vector3(x, 6.8 - pointerY * 0.55 + Math.sin(t * 0.3) * 0.12, 28 - progress * 15), 0.055);
+      cameraDestination.set(x, 6.8 - pointerY * 0.55 + Math.sin(t * 0.3) * 0.12, 28 - progress * 15);
+      camera.position.lerp(cameraDestination, 0.055);
       target.set(0, 10, -12 - progress * 13);
       camera.lookAt(target);
       renderer.render(scene, camera);
