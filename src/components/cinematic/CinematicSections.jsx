@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, Github, X } from "lucide-react";
 import { supabase } from "../../supabase";
 import "./cinematic-sections.css";
@@ -84,8 +86,22 @@ function Certificates({ items, loading }) {
   </div></section>;
 }
 export default function CinematicSections() {
+  const root = useRef(null);
   const { projects, certificates, loading } = usePortfolioData();
-  return <div className="cinema-shell cinema-sections">
+  useEffect(() => {
+    if (!root.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(".cinema-section__heading").forEach((el) => {
+        gsap.fromTo(el, {opacity:0,y:44,filter:"blur(9px)"}, {opacity:1,y:0,filter:"blur(0px)",duration:1.25,ease:"power3.out",scrollTrigger:{trigger:el,start:"top 88%",once:true}});
+      });
+      gsap.utils.toArray(".cinema-tech,.cinema-projects__item,.cinema-timeline__entry,.cinema-cert").forEach((el,i) => {
+        gsap.fromTo(el,{opacity:0,y:22},{opacity:1,y:0,duration:.85,delay:(i%5)*.06,ease:"power2.out",scrollTrigger:{trigger:el,start:"top 94%",once:true}});
+      });
+    },root);
+    return () => ctx.revert();
+  }, [loading]);
+  return <div ref={root} className="cinema-shell cinema-sections">
     <section className="cinema-section cinema-about" id="About"><div className="cinema-container cinema-about__layout"><Heading number="01" eyebrow="THE PERSON BEHIND THE WORK">BEYOND <em>THE CODE.</em></Heading><div><p className="cinema-lead">I’m Hanifa Asad — a full-stack developer and technology educator building digital products that balance ambition with purpose.</p><p className="cinema-muted">From modern web applications and custom management systems to training the next generation of developers, my work connects technology, people and practical impact.</p><a className="cinema-text-link" href="https://drive.google.com/file/d/1wHEKQWYAZrfYp34BAW_0we2wWuvPo695/view?usp=drivesdk" target="_blank" rel="noopener noreferrer">Explore my CV <ArrowUpRight size={18}/></a></div></div></section>
     <section className="cinema-section" id="expertise"><div className="cinema-container"><Heading number="02" eyebrow="CONNECTED THINKING">THE SYSTEMS <em>I BUILD.</em></Heading><p className="cinema-muted">Technologies I use to create end-to-end digital experiences.</p><div className="cinema-tech-grid">{technologies.map((tech,i) => <div className="cinema-tech" key={tech}><span>{String(i+1).padStart(2,"0")}</span><strong>{tech}</strong></div>)}</div></div></section>
     <ProjectGallery projects={projects} loading={loading}/>
