@@ -7,7 +7,8 @@ export default function CinematicScene() {
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     const host = mountRef.current;
-    if (!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!host) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setFailed(true); return; }
     let renderer;
     let frameId = 0;
     let observer;
@@ -15,6 +16,8 @@ export default function CinematicScene() {
     let pageVisible = !document.hidden;
     let sceneVisible = true;
     let visibilityObserver;
+    let contextLost=false;
+    let removeContextHandlers=()=>{};
     let disposed = false;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#07100d");
@@ -374,6 +377,14 @@ export default function CinematicScene() {
       environmentTarget=environmentGenerator.fromScene(studio,.04);
       scene.environment=environmentTarget.texture;
       renderer.domElement.setAttribute("aria-hidden", "true");
+      const handleContextLost=event=>{event.preventDefault();contextLost=true;running=false;cancelAnimationFrame(frameId);setFailed(true);};
+      const handleContextRestored=()=>{contextLost=true;setFailed(true);};
+      renderer.domElement.addEventListener("webglcontextlost",handleContextLost,false);
+      renderer.domElement.addEventListener("webglcontextrestored",handleContextRestored,false);
+      removeContextHandlers=()=>{
+        renderer.domElement.removeEventListener("webglcontextlost",handleContextLost);
+        renderer.domElement.removeEventListener("webglcontextrestored",handleContextRestored);
+      };
       host.appendChild(renderer.domElement);
       window.addEventListener("pointermove", onPointer, { passive: true });
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -386,7 +397,7 @@ export default function CinematicScene() {
       resize();
       onScroll();
       const syncRendering=()=>{
-        const shouldRun=pageVisible&&sceneVisible&&!disposed;
+        const shouldRun=pageVisible&&sceneVisible&&!disposed&&!contextLost;
         if(shouldRun&&!running){running=true;draw();}
         else if(!shouldRun&&running){running=false;cancelAnimationFrame(frameId);}
       };
@@ -409,13 +420,18 @@ export default function CinematicScene() {
       observer?.disconnect();
       layoutObserver?.disconnect();
       visibilityObserver?.disconnect();
+      removeContextHandlers();
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
-      scene.traverse((obj) => { if (obj.isMesh && obj.geometry && !geometries.includes(obj.geometry)) obj.geometry.dispose(); });
-      geometries.forEach((geometry) => geometry.dispose());
-      scene.traverse(obj=>{if(obj.isMesh&&obj.material&&!Array.isArray(obj.material)&&!([metal,dark,emerald,floorMat,nodeMaterial,lineMaterial,glowMaterial,...atmosphericMaterials].includes(obj.material)))obj.material.dispose();});
-      [metal, dark, emerald, floorMat, nodeMaterial, lineMaterial, glowMaterial, dustMaterial, innerPortal.material,...atmosphericMaterials].forEach(material=>material.dispose());
+      const uniqueGeometries=new Set(geometries);
+      const uniqueMaterials=new Set([metal,dark,emerald,floorMat,nodeMaterial,lineMaterial,glowMaterial,dustMaterial,innerPortal.material,...atmosphericMaterials]);
+      scene.traverse(obj=>{
+        if(obj.geometry)uniqueGeometries.add(obj.geometry);
+        if(obj.material)(Array.isArray(obj.material)?obj.material:[obj.material]).forEach(mat=>uniqueMaterials.add(mat));
+      });
+      uniqueGeometries.forEach(geometry=>geometry.dispose());
+      uniqueMaterials.forEach(material=>material.dispose());
       shaftTexture.dispose();glowTexture.dispose();
       environmentTarget?.dispose();
       environmentGenerator?.dispose();
