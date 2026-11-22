@@ -19,6 +19,8 @@ export default function CinematicScene() {
     let contextLost=false;
     let removeContextHandlers=()=>{};
     let disposed = false;
+    let lastFrameTime=0;
+    let scrollDirty=true;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#07100d");
     scene.fog = new THREE.FogExp2("#07100d", 0.0065);
@@ -278,6 +280,7 @@ export default function CinematicScene() {
       pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
     };
     const onScroll = () => {
+      scrollDirty=true;
       const total = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, window.scrollY / total));
     };
@@ -295,6 +298,11 @@ export default function CinematicScene() {
     const cameraDestination = new THREE.Vector3();
     const draw = () => {
       if (!running || disposed) return;
+      frameId=requestAnimationFrame(draw);
+      const now=performance.now();
+      const frameInterval=window.innerWidth<768?1000/30:1000/60;
+      if(now-lastFrameTime<frameInterval)return;
+      lastFrameTime=now;
       const t = clock.getElapsedTime();
       const x = pointerX * 1.1;
       const y=window.scrollY+window.innerHeight*.5;
@@ -332,7 +340,8 @@ export default function CinematicScene() {
       const targetExposure=THREE.MathUtils.lerp(chapterExposure[index],chapterExposure[index+1],eased);
       renderer.toneMappingExposure=THREE.MathUtils.lerp(renderer.toneMappingExposure,targetExposure,.035);
       ambient.intensity=1.45+Math.sin(motion.chapter*Math.PI*.5)*.12;
-      host.dataset.chapter=chapterNames[Math.min(8,Math.round(motion.chapter))];
+      const currentChapter=chapterNames[Math.min(8,Math.round(motion.chapter))];
+      if(host.dataset.chapter!==currentChapter)host.dataset.chapter=currentChapter;
       const opening=easing(Math.min(1,Math.max(0,motion.chapter/.8)));
       heroDoors.forEach(({door,sign})=>{door.position.x=sign*(2.85+opening*6.8);door.material.opacity=.38*(1-opening*.8);});
       const heroPresence=Math.max(0,1-motion.chapter*.85);
@@ -365,7 +374,6 @@ export default function CinematicScene() {
       shafts.forEach(({material,phase})=>{material.opacity=.14+.07*(1+Math.sin(t*.55+phase));});
       dustMaterial.opacity=.4+.08*Math.sin(t*.3);
       renderer.render(scene, camera);
-      frameId = requestAnimationFrame(draw);
     };
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power" });
