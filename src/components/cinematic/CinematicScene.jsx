@@ -12,6 +12,9 @@ export default function CinematicScene() {
     let frameId = 0;
     let observer;
     let running = false;
+    let pageVisible = !document.hidden;
+    let sceneVisible = true;
+    let visibilityObserver;
     let disposed = false;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#07100d");
@@ -272,14 +275,13 @@ export default function CinematicScene() {
       pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
     };
     const onScroll = () => {
-      centers=chapterCenters();
       const total = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, window.scrollY / total));
     };
     const resize = () => {
       if (!renderer || disposed) return;
       const w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, w < 768 ? 1.25 : 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, w < 768 ? 1.1 : 1.5));
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.fov = w < 640 ? 64 : 48;
@@ -383,14 +385,18 @@ export default function CinematicScene() {
       document.fonts?.ready?.then(()=>{if(!disposed)centers=chapterCenters();});
       resize();
       onScroll();
-      const onVisibility = () => {
-        running = !document.hidden;
-        cancelAnimationFrame(frameId);
-        if (running) draw();
+      const syncRendering=()=>{
+        const shouldRun=pageVisible&&sceneVisible&&!disposed;
+        if(shouldRun&&!running){running=true;draw();}
+        else if(!shouldRun&&running){running=false;cancelAnimationFrame(frameId);}
       };
+      const onVisibility=()=>{pageVisible=!document.hidden;syncRendering();};
+      if(typeof IntersectionObserver!=="undefined"){
+        visibilityObserver=new IntersectionObserver(entries=>{sceneVisible=Boolean(entries[0]?.isIntersecting);syncRendering();},{threshold:0});
+        visibilityObserver.observe(host);
+      }
       document.addEventListener("visibilitychange", onVisibility);
-      running = !document.hidden;
-      if (running) draw();
+      syncRendering();
       observer = { disconnect: () => document.removeEventListener("visibilitychange", onVisibility) };
     } catch (error) {
       console.warn("Cinematic WebGL fallback:", error);
@@ -402,6 +408,7 @@ export default function CinematicScene() {
       cancelAnimationFrame(frameId);
       observer?.disconnect();
       layoutObserver?.disconnect();
+      visibilityObserver?.disconnect();
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
