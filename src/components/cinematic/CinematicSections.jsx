@@ -59,7 +59,7 @@ function ProjectGallery({ projects, loading }) {
       <article className="cinema-projects__preview" aria-live="polite">
         {selected?.image ? <img src={selected.image} alt={selected.title + " project preview"} loading="lazy" /> : <div className="cinema-projects__placeholder" aria-hidden="true"><span>{selected?.title}</span></div>}
         <div className="cinema-projects__details"><h3>{selected?.title}</h3>{selected?.description && <p>{selected.description}</p>}
-        <div className="cinema-projects__links">{selected?.url && <a href={selected.url} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}{selected?.github && <a href={selected.github} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}</div></div>
+        <div className="cinema-projects__links">{selected?.id != null && <a href={"/project/" + encodeURIComponent(selected.id)}>Project details <ArrowUpRight size={16}/></a>}{selected?.url && <a href={selected.url} target="_blank" rel="noopener noreferrer">Live website <ArrowUpRight size={16}/></a>}{selected?.github && selected.github !== "Private" && <a href={selected.github} target="_blank" rel="noopener noreferrer">Source code <Github size={16}/></a>}</div></div>
       </article>
     </div>
   </div></section>;
@@ -80,7 +80,7 @@ function Certificates({ items, loading }) {
     {!loading && !items.length && <p className="cinema-muted">Certificate gallery will appear when Supabase records are available.</p>}
     <div className="cinema-cert-grid">{items.slice(0,showAll ? items.length : 6).map((c,i) => <button key={c.id ?? i} className="cinema-cert" onClick={() => setSelected(c)} aria-label={"Preview " + titleFor(c)}>{imageFor(c) ? <img src={imageFor(c)} alt="" loading="lazy" /> : <span className="cinema-cert__placeholder">CERTIFICATE / {String(i + 1).padStart(2,"0")}</span>}<strong>{titleFor(c)}</strong><span>VIEW CERTIFICATE ↗</span></button>)}</div>
     {items.length > 6 && <button className="cinema-more" onClick={() => setShowAll(v => !v)}>{showAll ? "Show fewer" : "View all certificates"}</button>}
-    {selected && <div className="cinema-lightbox" role="presentation" onClick={() => setSelected(null)}><div className="cinema-lightbox__panel" role="dialog" aria-modal="true" aria-label={titleFor(selected)} onClick={e => e.stopPropagation()}><button className="cinema-lightbox__close" onClick={() => setSelected(null)} aria-label="Close preview"><X/></button>{imageFor(selected) ? <img src={imageFor(selected)} alt={titleFor(selected)} /> : <p>Image unavailable</p>}<h3>{titleFor(selected)}</h3></div></div>}
+    {selected && <div className="cinema-lightbox" role="presentation" onClick={() => setSelected(null)}><div className="cinema-lightbox__panel" role="dialog" aria-modal="true" aria-label={titleFor(selected)} tabIndex={-1} onClick={e => e.stopPropagation()}><button className="cinema-lightbox__close" onClick={() => setSelected(null)} aria-label="Close preview"><X/></button>{imageFor(selected) ? <img src={imageFor(selected)} alt={titleFor(selected)} /> : <p>Image unavailable</p>}<h3>{titleFor(selected)}</h3></div></div>}
   </div></section>;
 }
 export default function CinematicSections() {
