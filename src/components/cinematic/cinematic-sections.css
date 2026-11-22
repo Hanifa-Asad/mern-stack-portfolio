@@ -6,3 +6,15 @@
 .cinema-sections .cinema-section.cinema-contact{background:linear-gradient(90deg,rgba(12,29,20,.96),rgba(12,29,20,.77))}
 .cinema-sections .cinema-section__heading h2{max-width:900px}
 @media(max-width:700px){.cinema-sections .cinema-section,.cinema-sections .cinema-section:nth-of-type(even){background:rgba(7,16,13,.8)}}
+
+/* Recording-led correction: stop covering the 3D scene with near-opaque panels. */
+@media(min-width:801px){
+ .cinema-sections .cinema-section{min-height:85vh;background:linear-gradient(90deg,rgba(7,16,13,.83),rgba(7,16,13,.38) 56%,rgba(7,16,13,.05))!important;backdrop-filter:none}
+ .cinema-sections .cinema-section:nth-of-type(even){background:linear-gradient(270deg,rgba(7,16,13,.79),rgba(7,16,13,.36) 57%,rgba(7,16,13,.04))!important}
+ .cinema-sections .cinema-section#expertise{background:linear-gradient(180deg,rgba(7,16,13,.68),rgba(7,16,13,.24))!important}
+ .cinema-sections .cinema-section#Portofolio{background:linear-gradient(90deg,rgba(7,16,13,.82),rgba(7,16,13,.52) 70%,rgba(7,16,13,.25))!important}
+ .cinema-sections .cinema-section#Contact{background:linear-gradient(90deg,rgba(7,16,13,.92),rgba(7,16,13,.58))!important}
+}
+.cinema-projects__preview{box-shadow:0 30px 100px rgba(0,0,0,.45);overflow:hidden}
+.cinema-projects__preview>img{object-fit:contain;background:#07100d;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.cinema-projects__preview:hover>img{transform:scale(1.035)}
