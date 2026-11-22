@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Github, Linkedin, Mail, X } from "lucide-react";
+import { ArrowUpRight, Github, X } from "lucide-react";
 import { supabase } from "../../supabase";
 import "./cinematic-sections.css";
 import CinematicContactForm from "./CinematicContactForm";
@@ -93,7 +93,7 @@ export default function CinematicSections() {
     <section className="cinema-section cinema-education" id="teaching"><div className="cinema-container"><Heading number="05" eyebrow="THE IMPACT OF SHARING KNOWLEDGE">BUILDING THE <em>NEXT GENERATION.</em></Heading><p className="cinema-lead">Technology becomes more powerful when knowledge is shared.</p><p className="cinema-muted">Through classroom instruction, corporate training and my Young Tech Explorers initiative, I help learners move from curiosity to real-world creation.</p><span className="cinema-education__signature">YOUNG TECH EXPLORERS / EDUCATION & INNOVATION</span></div></section>
     <section className="cinema-section cinema-award" id="award"><div className="cinema-container"><Heading number="06" eyebrow="RECOGNITION">FUTURE <em>LEADER.</em></Heading><p className="cinema-lead">Future Leaders Award 2026 · Tech Trainers</p><p className="cinema-muted">Recognition for the work of educating and inspiring future technology creators.</p></div></section>
     <Certificates items={certificates} loading={loading}/>
-    <section className="cinema-section cinema-contact" id="Contact"><div className="cinema-container"><Heading number="08" eyebrow="YOUR NEXT IDEA STARTS HERE">LET’S BUILD SOMETHING <em>MEANINGFUL.</em></Heading><p className="cinema-lead">Have a project, collaboration or teaching opportunity in mind?</p><a className="cinema-contact__email" href="mailto:hanifaasasd23@gmail.com">hanifaasasd23@gmail.com <ArrowUpRight size={26}/></a><div className="cinema-contact__social"><a href="https://github.com/Hanifa-Asad" target="_blank" rel="noopener noreferrer"><Github size={18}/> GitHub</a><a href="https://www.linkedin.com/in/hanifa-asad-3715212aa" target="_blank" rel="noopener noreferrer"><Linkedin size={18}/> LinkedIn</a><a href="mailto:hanifaasasd23@gmail.com"><Mail size={18}/> Email</a></div><CinematicContactForm /></div></section>
+    <section className="cinema-section cinema-contact" id="Contact"><div className="cinema-container"><Heading number="08" eyebrow="YOUR NEXT IDEA STARTS HERE">LET’S BUILD SOMETHING <em>MEANINGFUL.</em></Heading><p className="cinema-lead">Have a project, collaboration or teaching opportunity in mind?</p><CinematicContactForm /></div></section>
     <footer className="cinema-footer"><div className="cinema-container">© {new Date().getFullYear()} HANIFA ASAD <span>DESIGNED TO BUILD WHAT MATTERS.</span></div></footer>
   </div>;
 }
